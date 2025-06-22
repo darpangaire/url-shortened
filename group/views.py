@@ -1,5 +1,5 @@
 from django.shortcuts import render,get_object_or_404
-from .serializers import ChannelSerializer,ChannelMembershipSerializer
+from .serializers import ChannelSerializer,ChannelMembershipSerializer,PostSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status,generics
@@ -22,6 +22,14 @@ class ChannelMemberShipCreateAPIView(generics.CreateAPIView):
   
   def perform_create(self, serializer):
     serializer.save()
+    
+class PostCreateAPIView(generics.CreateAPIView):
+  permission_classes = [IsAuthenticated]
+  serializer_class = PostSerializer
+  def perform_create(self, serializer):
+    serializer.save()
+    
+
 
 
 

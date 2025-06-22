@@ -33,7 +33,7 @@ class Post(models.Model):
   
 class PostImages(models.Model):
   post = models.ForeignKey(Post,on_delete=models.CASCADE,related_name='images')
-  images = models.ImageField(upload_to='post/')
+  images = models.ImageField(upload_to='post/',null=True,blank=True)
   
   class Meta:
     verbose_name_plural= 'PostImages'
