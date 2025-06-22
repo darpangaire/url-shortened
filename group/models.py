@@ -10,6 +10,7 @@ class Channels(models.Model):
   created_at = models.DateTimeField(auto_now_add=True)
   admin = models.ForeignKey(User, on_delete=models.CASCADE, related_name="admin_channels")
   members = models.ManyToManyField(User,through="ChannelsMemberShip",related_name='channels')
+
   
   class Meta:
     verbose_name_plural ='channels'
@@ -21,6 +22,7 @@ class Channels(models.Model):
 class Post(models.Model):
   title = models.CharField(max_length=255)
   description = models.TextField()
+  channel = models.ForeignKey(Channels,on_delete=models.CASCADE,related_name='posts',null=True)
   created_at = models.DateTimeField(auto_now_add=True)
   
   class Meta:

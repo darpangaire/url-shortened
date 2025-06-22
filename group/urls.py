@@ -1,8 +1,11 @@
 from django.urls import path
-from .views import ChannelViewSet
+from .views import ChannelCreateAPIView,ChannelMemberShipCreateAPIView
 
 urlpatterns = [
-  path('',ChannelViewSet.as_view(),name='channel'),
+  path('',ChannelCreateAPIView.as_view(),name='createchannel'),
+  path('join-channels/',ChannelMemberShipCreateAPIView.as_view(),name='join-channels'),
   
 ] 
+
+
 
