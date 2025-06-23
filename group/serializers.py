@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
-from .models import Channels,ChannelsMemberShip,Post
+from .models import Channels,ChannelsMemberShip,Post,PostImages
 from django.contrib.auth import get_user_model
 
 user = get_user_model()
@@ -51,13 +51,23 @@ class ChannelMembershipSerializer(serializers.ModelSerializer):
       member = user
     )
     return channelMembership
-    
+ 
+ 
+class PostImageSerializer(serializers.ModelSerializer):
+  class Meta:
+    model = PostImages
+    fields = ["id","images"]
+  
+
+
+   
 class PostSerializer(serializers.ModelSerializer):
+  images = PostImageSerializer(many=True,write_only = True,required = False)
   title = serializers.CharField(max_length = 255,required = True)
   description = serializers.CharField()
   class Meta:
     model = Post
-    fields = ["id","title","description","channel"]
+    fields = ["id","title","description","channel","images"]
     
   def validate_channel(self,value):
     request = self.context.get('request')
@@ -72,14 +82,12 @@ class PostSerializer(serializers.ModelSerializer):
     return value
   
   def create(self, validated_data):
-    channel = validated_data.get('channel')
-    if not channel:
-      raise serializers.ValidationError({"channel": "Channel is required."})
-    title = validated_data['title']
-    description = validated_data['description']
-    
-    post = Post.objects.create(channel=channel,title=title,description=description)
+    images_data = validated_data.pop('images', [])
+    post = super().create(validated_data)
+    for image_data in images_data:
+        PostImages.objects.create(post=post, images=image_data['images'])
     return post
   
   
+
  

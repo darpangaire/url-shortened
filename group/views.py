@@ -6,6 +6,7 @@ from rest_framework import status,generics
 from .models import Channels,ChannelsMemberShip
 from rest_framework.permissions import IsAuthenticated
 from django.shortcuts import get_object_or_404
+from rest_framework.parsers import MultiPartParser,FormParser
 
 # Create your views here.
 
@@ -26,10 +27,16 @@ class ChannelMemberShipCreateAPIView(generics.CreateAPIView):
 class PostCreateAPIView(generics.CreateAPIView):
   permission_classes = [IsAuthenticated]
   serializer_class = PostSerializer
-  def perform_create(self, serializer):
-    serializer.save()
+  parser_classes = (MultiPartParser, FormParser)
+  def get_serializer_context(self):
+    context = super().get_serializer_context()
+    context['request'] = self.request
+    return context
+  
+  
     
-
+def home(request):
+  return render(request,'index.html')
 
 
 

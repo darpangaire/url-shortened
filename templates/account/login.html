@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="bg-gradient-to-tr from-blue-50 to-purple-100 min-h-screen flex items-center justify-center">
+  <div class="bg-white rounded-xl shadow-lg p-8 w-full max-w-md">
+    <h2 class="text-2xl font-bold mb-4 text-center text-blue-700">Login</h2>
+    {% if request.GET.verified == "1" %}
+      <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-2 rounded mb-4">
+        Email verification successful! You can now login.
+      </div>
+    {% elif request.GET.verified == "0" %}
+      <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded mb-4">
+        Invalid or expired email verification link.
+      </div>
+    {% endif %}
+    <form id="loginForm" class="space-y-4">
+      <div>
+        <label class="block text-gray-700 mb-1" for="email">Email</label>
+        <input type="email" id="email" name="email" required autocomplete="username"
+          class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-400">
+      </div>
+      <div>
+        <label class="block text-gray-700 mb-1" for="password">Password</label>
+        <input type="password" id="password" name="password" required autocomplete="current-password"
+          class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-400">
+      </div>
+      <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded font-semibold transition">Login</button>
+    </form>
+    <div id="loginMessage" class="mt-4 text-center"></div>
+  </div>
+</div>
+<script>
+  const form = document.getElementById('loginForm');
+  const msgDiv = document.getElementById('loginMessage');
+
+  form.addEventListener('submit', async function(e) {
+    e.preventDefault();
+    msgDiv.innerHTML = "";
+
+    const data = {
+      email: form.email.value,
+      password: form.password.value
+    };
+
+    try {
+      const response = await fetch('/account/api-login/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Requested-With': 'XMLHttpRequest'
+        },
+        body: JSON.stringify(data)
+      });
+      const resData = await response.json();
+      if (response.ok) {
+        msgDiv.innerHTML = `<div class="text-green-600 font-semibold">${resData.msg || "Login successful!"}</div>`;
+        setTimeout(() => {
+          window.location.href = "/";
+        }, 1200);
+      } else {
+        let errorHtml = '<div class="text-red-600 font-semibold mb-2">Login failed:</div>';
+        if (typeof resData === "object") {
+          for (const [field, errors] of Object.entries(resData)) {
+            errorHtml += `<div class="text-red-500"><span class="font-semibold">${field}:</span> ${Array.isArray(errors) ? errors.join(', ') : errors}</div>`;
+          }
+        } else {
+          errorHtml += `<div class="text-red-500">${resData}</div>`;
+        }
+        msgDiv.innerHTML = errorHtml;
+      }
+    } catch (err) {
+      msgDiv.innerHTML = `<div class="text-red-600">An error occurred. Please try again.</div>`;
+    }
+  });
+</script>
+{% endblock %}
+

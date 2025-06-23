@@ -1,13 +1,20 @@
 from django.urls import path
-from .views import UserRegistrationView,VerifyEmailView,UserLoginView
+from .views import UserRegistrationView,UserLoginView,register_view,email_verification_alert,login_view,verify_email_and_redirect
 
 urlpatterns = [
   path("api-register/",UserRegistrationView.as_view(),name='apiRegister'),
-  path("api/verify-email/<uidb64>/<token>/",VerifyEmailView.as_view(),name='verify-email'),
   
   path('api-login/',UserLoginView.as_view(),name='api-login'),
   
+  path('register/',register_view,name='register'),
+  path('email-verification-alert/', email_verification_alert, name='email_verification_alert'),
+  path("verify-email/<uidb64>/<token>/", verify_email_and_redirect, name='verify-email-redirect'),
+  
+  path('login/',login_view,name='login')
+  
 ]
+
+
 
 
 

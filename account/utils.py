@@ -11,7 +11,7 @@ def send_verification_email(user,request):
   token = default_token_generator.make_token(user)
   uid = urlsafe_base64_encode(force_bytes(user.id))
   domain = request.get_host()
-  verification_link = f"http://{domain}/account/api/verify-email/{uid}/{token}/"
+  verification_link = f"http://{domain}/account/verify-email/{ uid }/{ token }/"
   subject = "verify your email"
   message = f"hi {user.first_name},\n\nPlease verify your email by clicking the link below:\n{verification_link}\n\nThanks!"
   

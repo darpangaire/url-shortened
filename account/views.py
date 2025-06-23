@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render,redirect
 from rest_framework.views import APIView
 from .serializers import UserRegistrationSerializers,LoginUserSerializers
 from rest_framework.response import Response
@@ -45,22 +45,8 @@ class UserRegistrationView(APIView):
   
   
 # Create a View to Handle Verification Link
-class VerifyEmailView(APIView):
-  def get(self,request,uidb64,token):
-    try:
-      uid = urlsafe_base64_decode(uidb64).decode()
-      user = User.objects.get(pk=uid)
-    except (TypeError,ValueError,OverflowError,User.DoesNotExist):
-      user = None
-      
-    if user and default_token_generator.check_token(user,token):
-      user.is_active = True
-      user.save()
-      return Response({"message":"Email Verified Successfully"},status=status.HTTP_200_OK)
-      
-    return Response({"error":"Invalid or expired token"},status=status.HTTP_400_BAD_REQUEST)
-  
-       
+
+ 
 class UserLoginView(APIView):
   def post(self,request,format=None):
     serializers = LoginUserSerializers(data = request.data, context={'request': request})
@@ -73,6 +59,31 @@ class UserLoginView(APIView):
       return Response(serializers.errors,status=status.HTTP_400_BAD_REQUEST)
     
     
-      
+def register_view(request):
+  return render(request,'account/register.html')
  
-    
+def email_verification_alert(request):
+  return render(request, 'account/alert.html')
+
+def verify_email_and_redirect(request, uidb64, token):
+  try:
+    uid = urlsafe_base64_decode(uidb64).decode()
+    user = User.objects.get(pk=uid)
+  except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+    user = None
+
+  if user and default_token_generator.check_token(user, token):
+    user.is_active = True
+    user.save()
+    # Redirect to login with success param
+    return redirect('/account/login/?verified=1')
+  # Redirect to login with error param
+  else:
+    send_verification_email(user,request)
+    return redirect('email_verification_alert')
+
+
+def login_view(request):
+  return render(request,'account/login.html')
+
+  
