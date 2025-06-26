@@ -2,16 +2,21 @@ from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 from .models import Channels,ChannelsMemberShip,Post,PostImages
 from django.contrib.auth import get_user_model
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.authentication import TokenAuthentication
 
 user = get_user_model()
 
 class ChannelSerializer(serializers.ModelSerializer):
+  authentication_classes = [TokenAuthentication]
+  permission_classes = [IsAuthenticated]
   name = serializers.CharField(max_length = 255,required=True,validators = [UniqueValidator(queryset=Channels.objects.all())])
   description = serializers.CharField()
+  image = serializers.ImageField(required=False, allow_null=True)
   
   class Meta:
     model = Channels
-    fields = ["id","name","description","created_at"]
+    fields = ["id","name","description","created_at","image"]
     read_only_fields = ["id","created_at"] # Auto-managed field
     
   def create(self, validated_data):
@@ -19,9 +24,11 @@ class ChannelSerializer(serializers.ModelSerializer):
     user = request.user if request else None
     name = validated_data['name']
     description = validated_data['description']
+    image = validated_data.get('image','None')
     channels = Channels.objects.create(
       name=name,
       description=description,
+      image = image,
       admin=user
     )
     return channels

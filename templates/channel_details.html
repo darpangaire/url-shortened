@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+<div class="bg-gray-100 py-10">
+  <div class="max-w-4xl mx-auto space-y-8">
+
+    <!-- Channel Header -->
+    <div class="bg-white p-6 rounded-lg shadow">
+      <h2 class="text-2xl font-bold text-blue-700">{{ channel.name }}</h2>
+      <p class="text-gray-600">{{ channel.description }}</p>
+      <p class="text-sm text-gray-400">Admin: {{ channel.admin }}</p>
+    </div>
+
+    <!-- Admin Only Post Form -->
+    <p>request.user: {{ request.user }}</p>
+<p>channel.admin: {{ channel.admin }}</p>
+<p>request.user.id: {{ request.user.id }}</p>
+<p>channel.admin.id: {{ channel.admin.id }}</p>
+    {% if request.user == channel.admin %}
+    <h1>hi i am admin </h1>
+    <div class="bg-white p-6 rounded-lg shadow">
+      <h3 class="text-lg font-semibold mb-4">Create New Post</h3>
+      <form method="POST" enctype="multipart/form-data" action="{% url 'create_post' channel.id %}" class="space-y-4">
+        {% csrf_token %}
+        <input type="text" name="title" placeholder="Post Title" class="w-full border px-3 py-2 rounded" required>
+        <textarea name="description" placeholder="Post Description" class="w-full border px-3 py-2 rounded" required></textarea>
+        <input type="file" name="images" multiple>
+        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Post</button>
+      </form>
+    </div>
+    {% endif %}
+
+    <!-- Posts List -->
+    {% for post in posts %}
+    <div class="bg-white p-6 rounded-lg shadow space-y-4">
+      <div>
+        <h4 class="text-xl font-bold">{{ post.title }}</h4>
+        <p class="text-gray-700">{{ post.description }}</p>
+        <p class="text-sm text-gray-500">Posted on {{ post.created_at }}</p>
+        
+        <!-- Admin can delete post -->
+        {% if request.user == channel.admin %}
+        <form method="POST" action="{% url 'delete_post' post.id %}" class="mt-2">
+          {% csrf_token %}
+          <button type="submit" class="text-red-600 text-sm hover:underline">Delete Post</button>
+        </form>
+        {% endif %}
+      </div>
+
+      <!-- Post Images -->
+      {% if post.images.all %}
+      <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+        {% for img in post.images.all %}
+        <img src="{{ img.images.url }}" class="rounded shadow-md object-cover h-32 w-full" alt="">
+        {% endfor %}
+      </div>
+      {% endif %}
+
+      <!-- Comments -->
+      <div class="mt-4">
+        <h5 class="font-semibold mb-2">Comments</h5>
+        <div class="space-y-2">
+          {% for comment in post.comments.all %}
+          <div class="bg-gray-100 p-3 rounded">
+            <p><strong>{{ comment.name }}</strong>: {{ comment.text }}</p>
+            <p class="text-xs text-gray-500">{{ comment.created_at }}</p>
+
+            <!-- Admin can delete comment -->
+            {% if request.user == channel.admin %}
+            <form method="POST" action="{% url 'delete_comment' comment.id %}" class="mt-1">
+              {% csrf_token %}
+              <button type="submit" class="text-xs text-red-600 hover:underline">Delete Comment</button>
+            </form>
+            {% endif %}
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- Anonymous Comment Form -->
+      <form method="POST" action="{% url 'add_comment' post.id %}" class="mt-4 space-y-2">
+        {% csrf_token %}
+        <input type="text" name="name" placeholder="Your name" class="w-full border px-3 py-2 rounded" required>
+        <textarea name="text" placeholder="Write a comment..." class="w-full border px-3 py-2 rounded" required></textarea>
+        <button type="submit" class="bg-gray-800 text-white px-4 py-2 rounded hover:bg-black">Comment</button>
+      </form>
+    </div>
+    {% endfor %}
+
+  </div>
+</div>
+
+
+{% endblock %}

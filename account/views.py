@@ -13,6 +13,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.exceptions import AuthenticationFailed
+from django.contrib.auth import logout
 # Create your views here.
 
 User = get_user_model()
@@ -85,5 +86,10 @@ def verify_email_and_redirect(request, uidb64, token):
 
 def login_view(request):
   return render(request,'account/login.html')
+
+
+def logout_view(request):
+  logout(request)
+  return redirect('login')
 
   

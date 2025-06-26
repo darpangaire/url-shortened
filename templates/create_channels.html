@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+<div class="bg-gray-100 py-10">
+  <div class="max-w-lg mx-auto bg-white p-8 rounded-xl shadow">
+    <h2 class="text-2xl font-bold mb-6 text-center">Create a New Channel</h2>
+    <form id="createChannelForm" enctype="multipart/form-data" class="space-y-5">
+      
+      <div>
+        <label for="name" class="block text-sm font-medium text-gray-700">Channel Name</label>
+        <input type="text" id="name" name="name" required maxlength="255"
+               class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50" />
+      </div>
+      
+      <div>
+        <label for="description" class="block text-sm font-medium text-gray-700">Description</label>
+        <textarea id="description" name="description" rows="3" required
+                  class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50"></textarea>
+      </div>
+      
+      <div>
+        <label for="image" class="block text-sm font-medium text-gray-700">Channel Image</label>
+        <input type="file" id="image" name="image" accept="image/*"
+               class="mt-1 block w-full text-sm text-gray-500 rounded-md" />
+      </div>
+      
+      <button type="submit"
+              class="w-full py-2 px-4 bg-blue-600 text-white font-semibold rounded-md shadow hover:bg-blue-700 transition-colors">
+        Create Channel
+      </button>
+    </form>
+    
+    <!-- Success & Error Messages -->
+    <div id="message" class="mt-4 text-center"></div>
+  </div>
+<script>
+  async function refreshAccessToken() {
+    const refreshToken = localStorage.getItem('refresh_token');
+    if (!refreshToken) return null;
+
+    const response = await fetch('/api/token/refresh/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ refresh: refreshToken })
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      localStorage.setItem('access_token', data.access);
+      return data.access;
+    } else {
+      // Token refresh failed
+      localStorage.removeItem('access_token');
+      localStorage.removeItem('refresh_token');
+      return null;
+    }
+  }
+
+  document.getElementById('createChannelForm').onsubmit = async function (e) {
+    e.preventDefault();
+    const form = e.target;
+    const formData = new FormData(form);
+    const messageDiv = document.getElementById('message');
+
+    let accessToken = localStorage.getItem('access_token');
+    if (!accessToken) {
+      messageDiv.innerHTML = '<span class="text-red-600 font-semibold">You are not logged in. Please log in first.</span>';
+      return;
+    }
+
+    async function makeRequest(token) {
+      return fetch('/api/create-channel/', {
+        method: 'POST',
+        body: formData,
+        headers: {
+          'Authorization': 'Bearer ' + token
+        }
+      });
+    }
+
+    try {
+      let response = await makeRequest(accessToken);
+
+      // If access token expired, try refreshing
+      if (response.status === 401) {
+        accessToken = await refreshAccessToken();
+        if (accessToken) {
+          response = await makeRequest(accessToken); // retry with new token
+        } else {
+          messageDiv.innerHTML = '<span class="text-red-600 font-semibold">Session expired. Please log in again.</span>';
+          return;
+        }
+      }
+
+      const result = await response.json();
+
+      if (response.ok) {
+        window.location.href = '/';
+
+      } else {
+        messageDiv.innerHTML =
+          '<span class="text-red-600 font-semibold">Error: ' + (result.detail || JSON.stringify(result)) + '</span>';
+      }
+    } catch (err) {
+      messageDiv.innerHTML = '<span class="text-red-600 font-semibold">Error: ' + err.message + '</span>';
+    }
+  };
+</script>
+
+</div>
+
+{% endblock %}
+
