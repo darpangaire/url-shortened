@@ -9,8 +9,13 @@ from django.shortcuts import get_object_or_404
 from rest_framework.parsers import MultiPartParser,FormParser
 from django.contrib.auth.decorators import login_required
 from .models import Channels
+import jwt
+from django.conf import settings
+from django.contrib.auth import get_user_model
 
 # Create your views here.
+
+User = get_user_model()
 
 class ChannelCreateAPIView(generics.CreateAPIView):
   permission_classes = [IsAuthenticated]
@@ -25,7 +30,8 @@ class ChannelMemberShipCreateAPIView(generics.CreateAPIView):
   
   def perform_create(self, serializer):
     serializer.save()
-    
+  
+
 class PostCreateAPIView(generics.CreateAPIView):
   permission_classes = [IsAuthenticated]
   serializer_class = PostSerializer
@@ -53,25 +59,35 @@ def channels(request):
 def create_channels(request):
   return render(request,'create_channels.html')
 
+def get_user_from_jwt(request):
+  token = request.COOKIES.get('jwt')
+  if not token:
+    return None
 
+  try:
+    payload = jwt.decode(token,settings.SECRET_KEY,algorithms=['HS256'])
+    user = get_user_model().objects.get(id = payload['user_id'])
+    print('finally success vaiyo')
+    return user
+  
+  except (jwt.ExpiredSignatureError,jwt.DecodeError,get_user_model().DoesNotExist):
+    return None
+  
+  
 def channel_details(request,id):
+  user = get_user_from_jwt(request)
   channel = get_object_or_404(Channels,id=id)
   posts = channel.posts.prefetch_related('images').order_by('-created_at')
   context = {
     'channel': channel,
     'posts': posts,
+    'user':user
+
   }
-  print("Request User:", request.user)
-  print("Channel Admin:", channel.admin)
+
   return render(request,'channel_details.html',context)
 
 
   
-  
-
-  
-  
-    
-    
 
  

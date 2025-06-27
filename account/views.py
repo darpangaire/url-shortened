@@ -14,6 +14,7 @@ from rest_framework import status
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.exceptions import AuthenticationFailed
 from django.contrib.auth import logout
+from django.conf import settings
 # Create your views here.
 
 User = get_user_model()
@@ -54,7 +55,20 @@ class UserLoginView(APIView):
     if serializers.is_valid():
       user = serializers.validated_data['user']
       token = get_tokens_for_user(user)
-      return Response({"msg":"Login Successfull","token":token},status=status.HTTP_200_OK)
+      
+      
+      response =  Response({"msg":"Login Successfull","refresh":token['refresh']},status=status.HTTP_200_OK)
+      
+      response.set_cookie(
+        key="jwt",
+        value=token['access'],
+        httponly=True,
+        secure= not settings.DEBUG,
+        samesite='lax',
+        max_age=3600
+      )
+      
+      return response
       
     else:
       return Response(serializers.errors,status=status.HTTP_400_BAD_REQUEST)

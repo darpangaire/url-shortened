@@ -13,15 +13,12 @@
     </div>
 
     <!-- Admin Only Post Form -->
-    <p>request.user: {{ request.user }}</p>
-<p>channel.admin: {{ channel.admin }}</p>
-<p>request.user.id: {{ request.user.id }}</p>
-<p>channel.admin.id: {{ channel.admin.id }}</p>
-    {% if request.user == channel.admin %}
-    <h1>hi i am admin </h1>
+     <h1>{{user}}</h1>
+
+    {% if user == channel.admin %}
     <div class="bg-white p-6 rounded-lg shadow">
       <h3 class="text-lg font-semibold mb-4">Create New Post</h3>
-      <form method="POST" enctype="multipart/form-data" action="{% url 'create_post' channel.id %}" class="space-y-4">
+      <form method="POST" enctype="multipart/form-data" action="#" class="space-y-4">
         {% csrf_token %}
         <input type="text" name="title" placeholder="Post Title" class="w-full border px-3 py-2 rounded" required>
         <textarea name="description" placeholder="Post Description" class="w-full border px-3 py-2 rounded" required></textarea>
@@ -40,7 +37,7 @@
         <p class="text-sm text-gray-500">Posted on {{ post.created_at }}</p>
         
         <!-- Admin can delete post -->
-        {% if request.user == channel.admin %}
+        {% if user == channel.admin %}
         <form method="POST" action="{% url 'delete_post' post.id %}" class="mt-2">
           {% csrf_token %}
           <button type="submit" class="text-red-600 text-sm hover:underline">Delete Post</button>
@@ -67,7 +64,7 @@
             <p class="text-xs text-gray-500">{{ comment.created_at }}</p>
 
             <!-- Admin can delete comment -->
-            {% if request.user == channel.admin %}
+            {% if user == channel.admin %}
             <form method="POST" action="{% url 'delete_comment' comment.id %}" class="mt-1">
               {% csrf_token %}
               <button type="submit" class="text-xs text-red-600 hover:underline">Delete Comment</button>

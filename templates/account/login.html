@@ -48,21 +48,14 @@
           'Content-Type': 'application/json',
           'X-Requested-With': 'XMLHttpRequest'
         },
-        body: JSON.stringify(data)
+        body: JSON.stringify(data),
+        credentials: 'include'  // ✅ send/receive cookies
       });
+
       const resData = await response.json();
 
       if (response.ok) {
-        const { token, msg } = resData;
-
-        // ✅ Save tokens to localStorage
-        if (token && token.access && token.refresh) {
-          localStorage.setItem('access_token', token.access);
-          localStorage.setItem('refresh_token', token.refresh);
-        }
-
-        msgDiv.innerHTML = `<div class="text-green-600 font-semibold">${msg || "Login successful!"}</div>`;
-
+        msgDiv.innerHTML = `<div class="text-green-600 font-semibold">${resData.msg || "Login successful!"}</div>`;
         setTimeout(() => {
           window.location.href = "/";
         }, 1200);
@@ -82,5 +75,6 @@
     }
   });
 </script>
+
 {% endblock %}
 
