@@ -65,7 +65,7 @@ class UserLoginView(APIView):
         httponly=True,
         secure= not settings.DEBUG,
         samesite='lax',
-        max_age=3600
+        max_age=3600000
       )
       
       return response
@@ -104,6 +104,8 @@ def login_view(request):
 
 def logout_view(request):
   logout(request)
-  return redirect('login')
+  response = redirect('login')
+  response.delete_cookie('jwt')
+  return response
 
   

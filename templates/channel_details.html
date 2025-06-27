@@ -18,7 +18,7 @@
     {% if user == channel.admin %}
     <div class="bg-white p-6 rounded-lg shadow">
       <h3 class="text-lg font-semibold mb-4">Create New Post</h3>
-      <form method="POST" enctype="multipart/form-data" action="#" class="space-y-4">
+      <form method="POST" enctype="multipart/form-data" action="{% url 'create_Post' channel.id %}" class="space-y-4">
         {% csrf_token %}
         <input type="text" name="title" placeholder="Post Title" class="w-full border px-3 py-2 rounded" required>
         <textarea name="description" placeholder="Post Description" class="w-full border px-3 py-2 rounded" required></textarea>
@@ -38,7 +38,7 @@
         
         <!-- Admin can delete post -->
         {% if user == channel.admin %}
-        <form method="POST" action="{% url 'delete_post' post.id %}" class="mt-2">
+        <form method="POST" action="{% url 'delete_post' channel.id %}" class="mt-2">
           {% csrf_token %}
           <button type="submit" class="text-red-600 text-sm hover:underline">Delete Post</button>
         </form>
@@ -76,7 +76,7 @@
       </div>
 
       <!-- Anonymous Comment Form -->
-      <form method="POST" action="{% url 'add_comment' post.id %}" class="mt-4 space-y-2">
+      <form method="POST" action="{% url 'create_comment' post.id %}" class="mt-4 space-y-2">
         {% csrf_token %}
         <input type="text" name="name" placeholder="Your name" class="w-full border px-3 py-2 rounded" required>
         <textarea name="text" placeholder="Write a comment..." class="w-full border px-3 py-2 rounded" required></textarea>

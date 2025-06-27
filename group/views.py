@@ -1,4 +1,4 @@
-from django.shortcuts import render,get_object_or_404
+from django.shortcuts import render,get_object_or_404,redirect
 from .serializers import ChannelSerializer,ChannelMembershipSerializer,PostSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -8,10 +8,12 @@ from rest_framework.permissions import IsAuthenticated
 from django.shortcuts import get_object_or_404
 from rest_framework.parsers import MultiPartParser,FormParser
 from django.contrib.auth.decorators import login_required
-from .models import Channels
+from .models import Channels,Post,PostImages,Comment
 import jwt
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.http import HttpResponseForbidden
+from account.context_processor import get_user_from_jwt
 
 # Create your views here.
 
@@ -59,34 +61,68 @@ def channels(request):
 def create_channels(request):
   return render(request,'create_channels.html')
 
-def get_user_from_jwt(request):
-  token = request.COOKIES.get('jwt')
-  if not token:
-    return None
 
-  try:
-    payload = jwt.decode(token,settings.SECRET_KEY,algorithms=['HS256'])
-    user = get_user_model().objects.get(id = payload['user_id'])
-    print('finally success vaiyo')
-    return user
-  
-  except (jwt.ExpiredSignatureError,jwt.DecodeError,get_user_model().DoesNotExist):
-    return None
   
   
 def channel_details(request,id):
-  user = get_user_from_jwt(request)
   channel = get_object_or_404(Channels,id=id)
   posts = channel.posts.prefetch_related('images').order_by('-created_at')
   context = {
     'channel': channel,
     'posts': posts,
-    'user':user
+
 
   }
 
   return render(request,'channel_details.html',context)
 
+def create_Post(request,id):
+  if request.method == 'POST':
+    channel = get_object_or_404(Channels,id=id)
+    title = request.POST.get('title')
+    description = request.POST.get('description')
+    post = Post.objects.create(
+      channel=channel,
+      title = title,
+      description = description
+    )
+    
+    for image in request.FILES.getlist('images'):
+      PostImages.objects.create(post=post,images = image)
+      
+    return redirect('channel_details',id=id)
+  
+def delete_post(request,id):
+  post = get_object_or_404(Post,id=id)
+  user = get_user_from_jwt(request)
+  if user != post.channel.admin:
+    return HttpResponseForbidden("You are not allowed to delete this post.")
+  
+  PostImages.objects.filter(post=post).delete()
+  post.delete()
+  return redirect('channel_details',id=post.channel.id)   
+  
+
+def create_comment(request,id):
+  if request.method == "POST":
+    post = get_object_or_404(Post,id=id)
+    name = request.POST.get('name')
+    textArea = request.POST.get('text')
+    
+    Comment.objects.create(post=post,name=name,text = textArea)
+    return redirect('channel_details',id=post.channel.id) 
+  
+
+def delete_comment(request,id):
+  if request.method == 'POST':
+    comment = get_object_or_404(Comment,id=id)
+    user = get_user_from_jwt(request)
+    if user == comment.post.channel.admin:
+      comment.delete()
+    else:
+      return HttpResponseForbidden("you cannot delete comment only admin can.")
+    return redirect('channel_details',id=comment.post.channel.id)
+    
 
   
 

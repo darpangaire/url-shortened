@@ -23,4 +23,8 @@ def send_verification_email(user,request):
     fail_silently=False
     
   )
+  
+def sending_email(request,name):
+  message = " This channel {name} has some comments so please watch this."
+  
     
