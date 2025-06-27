@@ -5,7 +5,7 @@ from django.contrib.auth import get_user_model
 User = get_user_model()
 # Create your models here.
 def get_default_channel_images():
-  return f"images/dummy_image.png"
+  return f"channels/dummy_image.png"
 
 
 class Channels(models.Model):
@@ -14,13 +14,20 @@ class Channels(models.Model):
   created_at = models.DateTimeField(auto_now_add=True)
   admin = models.ForeignKey(User, on_delete=models.CASCADE, related_name="admin_channels")
   members = models.ManyToManyField(User,through="ChannelsMemberShip",related_name='channels',null=True,blank=False)
-  image  = models.ImageField(upload_to='channels/',null=True,default=get_default_channel_images)
+  image  = models.ImageField(upload_to='channels/',null=True,default=get_default_channel_images,blank=True)
   
   class Meta:
     verbose_name_plural ='channels'
     
   def __str__(self):
     return self.name
+  
+  def save(self,*args,**kwargs):
+    if not self.image:
+      self.image = get_default_channel_images()
+    super().save(*args,**kwargs)
+    
+
   
   
 

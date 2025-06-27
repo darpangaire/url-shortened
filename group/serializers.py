@@ -24,7 +24,7 @@ class ChannelSerializer(serializers.ModelSerializer):
     user = request.user if request else None
     name = validated_data['name']
     description = validated_data['description']
-    image = validated_data.get('image','None')
+    image = validated_data.get('image')
     channels = Channels.objects.create(
       name=name,
       description=description,

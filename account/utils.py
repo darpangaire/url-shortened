@@ -23,8 +23,23 @@ def send_verification_email(user,request):
     fail_silently=False
     
   )
+  # path('channels/<int:id>/', channel_details, name='channel_details'),
   
-def sending_email(request,name):
-  message = " This channel {name} has some comments so please watch this."
+def sending_email(request,post):
+  domain = request.get_host()
+  link = f"http://{domain}/channels/{post.channel.id}/"
+  message = f''' This channel {post.channel.name} has some comments so please watch this.
+  {link}
+  '''
+  subject = "alert about your channels"
+  
+  send_mail(
+    subject,
+    message,
+    settings.EMAIL_HOST_USER,
+    [post.channel.admin],
+    fail_silently=False,
+    
+  )
   
     

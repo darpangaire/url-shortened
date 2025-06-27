@@ -13,7 +13,9 @@ import jwt
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.http import HttpResponseForbidden
-from account.context_processor import get_user_from_jwt
+from account.backends import get_user_from_jwt_for_backend
+from account.utils import sending_email
+from django.core.paginator import Paginator
 
 # Create your views here.
 
@@ -47,32 +49,47 @@ class PostCreateAPIView(generics.CreateAPIView):
  
 def home(request):
   channels = Channels.objects.all()
+  paginator = Paginator(channels,4)
+  page = request.GET.get('page')
+  paged_channels = paginator.get_page(page)
+  channel_count = channels.count()
+  
+  
   context = {
-    "channels":channels
+    "channels":paged_channels,
+    "channel_count":channel_count
   }
   return render(request,'index.html',context)
-
 
 
 def channels(request):
   return render(request,'channels.html')
 
-@login_required(login_url='login')  
+ 
 def create_channels(request):
-  return render(request,'create_channels.html')
+  user = get_user_from_jwt_for_backend(request)
+  if user:
+    return render(request,'create_channels.html')
+  
+  else:
+    return redirect('login')
+  
 
 
   
   
 def channel_details(request,id):
   channel = get_object_or_404(Channels,id=id)
+  user = get_user_from_jwt_for_backend(request)
   posts = channel.posts.prefetch_related('images').order_by('-created_at')
   context = {
     'channel': channel,
     'posts': posts,
+    
 
 
   }
+  print(user)
 
   return render(request,'channel_details.html',context)
 
@@ -94,7 +111,7 @@ def create_Post(request,id):
   
 def delete_post(request,id):
   post = get_object_or_404(Post,id=id)
-  user = get_user_from_jwt(request)
+  user = get_user_from_jwt_for_backend(request)
   if user != post.channel.admin:
     return HttpResponseForbidden("You are not allowed to delete this post.")
   
@@ -110,13 +127,14 @@ def create_comment(request,id):
     textArea = request.POST.get('text')
     
     Comment.objects.create(post=post,name=name,text = textArea)
+    sending_email(request,post)
     return redirect('channel_details',id=post.channel.id) 
   
 
 def delete_comment(request,id):
   if request.method == 'POST':
     comment = get_object_or_404(Comment,id=id)
-    user = get_user_from_jwt(request)
+    user = get_user_from_jwt_for_backend(request)
     if user == comment.post.channel.admin:
       comment.delete()
     else:

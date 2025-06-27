@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+<div class="bg-gradient-to-r from-blue-50 via-purple-50 to-pink-50 min-h-screen py-14">
+  <div class="container mx-auto px-4">
+    <div class="bg-white/90 rounded-3xl shadow-2xl p-10 border border-blue-100">
+      <!-- Grid list -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-10">
+        {% if channels %}
+          {% for channel in channels %}
+          <a href="{% url 'channel_details' channel.id %}" class="group transition-transform transform hover:-translate-y-2 hover:scale-105 hover:shadow-2xl duration-300">
+            <div class="bg-gradient-to-br from-white to-blue-100 rounded-2xl border border-blue-100 shadow-lg p-7 flex flex-col items-center hover:bg-blue-50/70 transition relative overflow-hidden">
+              <div class="absolute top-0 right-0 opacity-10 pointer-events-none">
+                <svg width="60" height="60"><circle cx="30" cy="30" r="30" fill="url(#chan_radial)"/><defs><radialGradient id="chan_radial" cx="0" cy="0" r="1" gradientTransform="translate(30 30) rotate(90) scale(30)" gradientUnits="userSpaceOnUse"><stop stop-color="#6366F1"/><stop offset="1" stop-color="#EC4899" stop-opacity="0.7"/></radialGradient></defs></svg>
+              </div>
+              <img src="{{ channel.image.url }}" alt="{{ channel.name }}" class="w-24 h-24 rounded-full object-cover shadow-xl border-4 border-white group-hover:ring-4 group-hover:ring-purple-200 transition mb-4">
+              <h3 class="text-xl font-bold mb-1 text-gray-900 group-hover:text-blue-600 transition">{{ channel.name }}</h3>
+              <h4 class="text-pink-500 font-medium mb-2 text-sm">{{ channel.admin }}</h4>
+              <p class="text-gray-600 text-sm text-center mb-2 line-clamp-3">{{ channel.description }}</p>
+              <span class="text-xs text-blue-400 mt-2 font-semibold tracking-wide uppercase">View Details</span>
+            </div>
+          </a>
+          {% endfor %}
+        {% else %}
+          <div class="col-span-full text-center py-12">
+            <h1 class="text-2xl font-semibold text-gray-400">No channels created yet.</h1>
+            <p class="text-gray-400 mt-2">Be the first to <a href="{% url 'create-channels' %}" class="text-blue-600 underline hover:text-pink-600 transition">create a channel</a>!</p>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

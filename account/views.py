@@ -15,6 +15,8 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.exceptions import AuthenticationFailed
 from django.contrib.auth import logout
 from django.conf import settings
+from group.models import Channels
+from .backends import get_user_from_jwt_for_backend
 # Create your views here.
 
 User = get_user_model()
@@ -107,5 +109,16 @@ def logout_view(request):
   response = redirect('login')
   response.delete_cookie('jwt')
   return response
+
+
+def profile(request):
+  user = get_user_from_jwt_for_backend(request)
+  channels = None
+  try:
+    channels = Channels.objects.filter(admin = user)
+  except:
+    pass
+  return render(request,'account/profile.html',{"channels":channels})
+
 
   

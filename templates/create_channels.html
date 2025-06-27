@@ -2,38 +2,43 @@
 {% load static %}
 {% block content %}
 
-<div class="bg-gray-100 py-10">
-  <div class="max-w-lg mx-auto bg-white p-8 rounded-xl shadow">
-    <h2 class="text-2xl font-bold mb-6 text-center">Create a New Channel</h2>
-    <form id="createChannelForm" enctype="multipart/form-data" class="space-y-5">
-      
+<div class="bg-gradient-to-tr from-blue-100 via-purple-50 to-pink-100 min-h-screen flex items-center justify-center py-12">
+  <div class="max-w-lg w-full mx-auto bg-white/80 p-10 rounded-3xl shadow-2xl border border-blue-100 relative overflow-hidden">
+    <div class="absolute top-0 right-0 -mt-10 -mr-10 pointer-events-none select-none opacity-30">
+      <svg width="120" height="120" viewBox="0 0 120 120" fill="none"><circle cx="60" cy="60" r="60" fill="url(#paint0_radial)"/><defs><radialGradient id="paint0_radial" cx="0" cy="0" r="1" gradientTransform="translate(60 60) rotate(90) scale(60)" gradientUnits="userSpaceOnUse"><stop stop-color="#6366F1"/><stop offset="1" stop-color="#EC4899" stop-opacity="0.5"/></radialGradient></defs></svg>
+    </div>
+    <div class="absolute bottom-0 left-0 -mb-12 -ml-12 pointer-events-none select-none opacity-20">
+      <svg width="120" height="120" viewBox="0 0 120 120" fill="none"><circle cx="60" cy="60" r="60" fill="url(#paint0_radial)"/><defs><radialGradient id="paint0_radial" cx="0" cy="0" r="1" gradientTransform="translate(60 60) rotate(90) scale(60)" gradientUnits="userSpaceOnUse"><stop stop-color="#EC4899"/><stop offset="1" stop-color="#6366F1" stop-opacity="0.5"/></radialGradient></defs></svg>
+    </div>
+    <h2 class="text-3xl font-extrabold mb-8 text-center bg-clip-text text-transparent bg-gradient-to-r from-blue-700 via-purple-700 to-pink-600 drop-shadow-sm">Create a New Channel</h2>
+    <form id="createChannelForm" enctype="multipart/form-data" class="space-y-6 relative z-10">
       <div>
-        <label for="name" class="block text-sm font-medium text-gray-700">Channel Name</label>
+        <label for="name" class="block text-sm font-semibold text-blue-700">Channel Name</label>
         <input type="text" id="name" name="name" required maxlength="255"
-               class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50" />
+               class="mt-2 block w-full rounded-xl border-blue-200 bg-blue-50/50 shadow focus:border-purple-400 focus:ring-2 focus:ring-purple-200 focus:ring-opacity-40 px-4 py-2 text-lg transition" />
       </div>
-      
       <div>
-        <label for="description" class="block text-sm font-medium text-gray-700">Description</label>
+        <label for="description" class="block text-sm font-semibold text-blue-700">Description</label>
         <textarea id="description" name="description" rows="3" required
-                  class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50"></textarea>
+                  class="mt-2 block w-full rounded-xl border-blue-200 bg-blue-50/50 shadow focus:border-purple-400 focus:ring-2 focus:ring-purple-200 focus:ring-opacity-40 px-4 py-2 text-lg transition"></textarea>
       </div>
-      
       <div>
-        <label for="image" class="block text-sm font-medium text-gray-700">Channel Image</label>
+        <label for="image" class="block text-sm font-semibold text-blue-700">Channel Image</label>
         <input type="file" id="image" name="image" accept="image/*"
-               class="mt-1 block w-full text-sm text-gray-500 rounded-md" />
+               class="mt-2 block w-full text-sm text-blue-600 font-semibold rounded-xl border border-blue-200 bg-blue-50/50 shadow" />
       </div>
-      
       <button type="submit"
-              class="w-full py-2 px-4 bg-blue-600 text-white font-semibold rounded-md shadow hover:bg-blue-700 transition-colors">
-        Create Channel
+              class="w-full py-3 px-4 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-white font-extrabold rounded-full shadow-lg hover:scale-105 hover:shadow-xl transition-all tracking-wide text-lg">
+        <span class="inline-flex items-center gap-2 justify-center">
+          <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+          Create Channel
+        </span>
       </button>
     </form>
-    
     <!-- Success & Error Messages -->
-    <div id="message" class="mt-4 text-center"></div>
+    <div id="message" class="mt-5 text-center text-base"></div>
   </div>
+</div>
 <script>
   async function refreshAccessToken() {
     const refreshToken = localStorage.getItem('refresh_token');
@@ -52,7 +57,6 @@
       localStorage.setItem('access_token', data.access);
       return data.access;
     } else {
-      // Token refresh failed
       localStorage.removeItem('access_token');
       localStorage.removeItem('refresh_token');
       return null;
@@ -88,7 +92,7 @@
       if (response.status === 401) {
         accessToken = await refreshAccessToken();
         if (accessToken) {
-          response = await makeRequest(accessToken); // retry with new token
+          response = await makeRequest(accessToken);
         } else {
           messageDiv.innerHTML = '<span class="text-red-600 font-semibold">Session expired. Please log in again.</span>';
           return;
@@ -99,7 +103,6 @@
 
       if (response.ok) {
         window.location.href = '/';
-
       } else {
         messageDiv.innerHTML =
           '<span class="text-red-600 font-semibold">Error: ' + (result.detail || JSON.stringify(result)) + '</span>';
@@ -110,7 +113,4 @@
   };
 </script>
 
-</div>
-
 {% endblock %}
-
