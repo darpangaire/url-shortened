@@ -168,26 +168,12 @@ Pull requests are welcome! For major changes, please open an issue first to disc
 
 **Happy coding!**
 
-<img width="1366" height="768" alt="Image" src="https://github.com/user-attachments/assets/a9751c45-e4a3-4747-b74c-be61955f6bae" />
+<img width="1366" height="768" alt="Image" src="https://github.com/user-attachments/assets/8075af7e-bcfa-4233-8565-3edc2881eef5" />
 
-<img width="1366" height="768" alt="Image" src="https://github.com/user-attachments/assets/500cbb4b-69c9-4e29-8c56-188eafcab26c" />
+<img width="1366" height="768" alt="Image" src="https://github.com/user-attachments/assets/0d612056-841f-44da-9e82-d8d2c53c9831" />
 
-<img width="1366" height="768" alt="Image" src="https://github.com/user-attachments/assets/83095328-6f66-4776-89d7-060bbb110845" />
+<img width="1366" height="768" alt="Image" src="https://github.com/user-attachments/assets/b5175478-78c1-48f5-bc87-2f9fece7175a" />
 
-<img width="1366" height="768" alt="Image" src="https://github.com/user-attachments/assets/0c04e020-c348-4720-9987-6de7b6546ab9" />
+<img width="1366" height="768" alt="Image" src="https://github.com/user-attachments/assets/1876c097-7975-4435-9ba7-387d598bdf92" />
 
-<img width="1366" height="768" alt="Image" src="https://github.com/user-attachments/assets/bd05d0c5-a35e-4a7d-9000-510e4ea157d6" />
-
-<img width="1366" height="768" alt="Image" src="https://github.com/user-attachments/assets/be09a4d7-a635-43f5-9921-ac63479ec045" />
-
-<img width="1366" height="768" alt="Image" src="https://github.com/user-attachments/assets/b04702ea-2015-4066-b9f9-cb6ebb6eb539" />
-
-<img width="1366" height="768" alt="Image" src="https://github.com/user-attachments/assets/f4fb2a56-65af-47b7-bbe6-6bb24855f592" />
-
-<img width="1366" height="768" alt="Image" src="https://github.com/user-attachments/assets/fe6085d6-fabe-49cc-a451-df5429225f39" />
-
-<img width="1366" height="768" alt="Image" src="https://github.com/user-attachments/assets/36d21bff-93ba-4ae9-a2c0-bc21939483a1" />
-
-<img width="1366" height="768" alt="Image" src="https://github.com/user-attachments/assets/ed25c739-6526-4777-9041-63e82cdca443" />
-
-<img width="1366" height="768" alt="Image" src="https://github.com/user-attachments/assets/0ed03803-2806-460d-9e16-fc759f47b3aa" />
+<img width="1366" height="768" alt="Image" src="https://github.com/user-attachments/assets/5f6de97d-721f-4da1-95f4-e1effab2ea99" />
